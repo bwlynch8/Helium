@@ -12,15 +12,7 @@ jobs:
     steps:
     - name: Checkout repo
       uses: actions/checkout@v4
-      
-    - name: Show repo tree
-      run: |
-        echo "PWD=$(pwd)"
-        echo "--- repo contents ----"
-        ls -R
-        echo "---------------------"
 
-        
     - name: Set up Python
       uses: actions/setup-python@v5
       with:
@@ -35,36 +27,17 @@ jobs:
         python src/rate.py > data.json
         echo "DATA=$(cat data.json)" >> $GITHUB_ENV
 
-    - name: Verify template path
-      run: |
-        echo "GITHUB_WORKSPACE=$GITHUB_WORKSPACE"
-        echo "Listing $GITHUB_WORKSPACE/src"
-        ls -al "$GITHUB_WORKSPACE/src" || true
-        
     - name: Render HTML
       run: |
-        python <<'PY'
-        import json, os, html, pathlib
-
-        # -------- paths --------
-        root = pathlib.Path(os.environ["GITHUB_WORKSPACE"])   # repo root
-        template_path = root / "src" / "template.html"
-        dist_dir = root / "dist"
-        dist_dir.mkdir(exist_ok=True)
-
-        # -------- load data from the previous step --------
-        with open(root / "data.json", encoding="utf‑8") as f:
-            data = json.load(f)
-
-        # -------- fill placeholders --------
-        tpl = template_path.read_text(encoding="utf‑8")
-        for k, v in data.items():
+        python - <<'PY'
+        import json, pathlib, os, html, re
+        data = json.loads(os.environ["DATA"])
+        tpl  = pathlib.Path("src/template.html").read_text()
+        for k,v in data.items():
             tpl = tpl.replace(f"{{{{{k}}}}}", html.escape(str(v)))
-
-        # -------- write final HTML --------
-        (dist_dir / "index.html").write_text(tpl, encoding="utf‑8")
+        pathlib.Path("dist/index.html").parent.mkdir(exist_ok=True)
+        pathlib.Path("dist/index.html").write_text(tpl)
         PY
-
 
     - name: Deploy to gh-pages
       uses: peaceiris/actions-gh-pages@v3
