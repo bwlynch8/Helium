@@ -15,8 +15,11 @@ jobs:
       
     - name: Show repo tree
       run: |
-        echo "Repository contents:"
+        echo "PWD=$(pwd)"
+        echo "--- repo contents ----"
         ls -R
+        echo "---------------------"
+
         
     - name: Set up Python
       uses: actions/setup-python@v5
