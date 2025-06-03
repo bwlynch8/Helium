@@ -24,7 +24,7 @@ jobs:
     - name: Run rate script
       id: rates
       run: |
-        python Helium/rate.py > data.json
+        python src/rate.py > data.json
         echo "DATA=$(cat data.json)" >> $GITHUB_ENV
 
     - name: Render HTML
