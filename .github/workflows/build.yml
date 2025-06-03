@@ -37,15 +37,28 @@ jobs:
 
     - name: Render HTML
       run: |
-        python - <<'PY'
-        import json, pathlib, os, html, re
-        data = json.loads(os.environ["DATA"])
-        tpl  = pathlib.Path("src/template.html").read_text()
-        for k,v in data.items():
+        python <<'PY'
+        import json, os, html, pathlib
+
+        # -------- paths --------
+        root = pathlib.Path(os.environ["GITHUB_WORKSPACE"])   # repo root
+        template_path = root / "src" / "template.html"
+        dist_dir = root / "dist"
+        dist_dir.mkdir(exist_ok=True)
+
+        # -------- load data from the previous step --------
+        with open(root / "data.json", encoding="utf‑8") as f:
+            data = json.load(f)
+
+        # -------- fill placeholders --------
+        tpl = template_path.read_text(encoding="utf‑8")
+        for k, v in data.items():
             tpl = tpl.replace(f"{{{{{k}}}}}", html.escape(str(v)))
-        pathlib.Path("dist/index.html").parent.mkdir(exist_ok=True)
-        pathlib.Path("dist/index.html").write_text(tpl)
+
+        # -------- write final HTML --------
+        (dist_dir / "index.html").write_text(tpl, encoding="utf‑8")
         PY
+
 
     - name: Deploy to gh-pages
       uses: peaceiris/actions-gh-pages@v3
