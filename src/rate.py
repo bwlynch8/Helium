@@ -19,7 +19,8 @@ def hnt():    v=rpc("getTokenAccountsByOwner",[WALLET,{"mint":HNT},{"encoding":"
 mob=supply(); h=hnt()
 days=max(0,(TARGET-datetime.date.today()).days)
 print(json.dumps({
-    "fetched":datetime.datetime.utcnow().isoformat()+"Z",
+    "fetched_iso":   utc_now.isoformat() + "Z",
+    "fetched_human": utc_now.strftime("%d %b %Y %H:%M UTC"),
     "live": f"{(mob/h):.8f}",
     "proj":f"{(mob/(h+DAILY*days)):.8f}",
     "days":days
