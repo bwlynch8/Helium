@@ -1,0 +1,46 @@
+name: Build & Deploy swap‑rate page
+on:
+  push:
+    branches: [ main ]
+  schedule:
+    # every 15 minutes (UTC)
+    - cron:  '*/15 * * * *'
+
+jobs:
+  build:
+    runs-on: ubuntu-latest
+    steps:
+    - name: Checkout repo
+      uses: actions/checkout@v4
+
+    - name: Set up Python
+      uses: actions/setup-python@v5
+      with:
+        python-version: '3.12'
+
+    - name: Install deps
+      run: pip install requests
+
+    - name: Run rate script
+      id: rates
+      run: |
+        python src/rate.py > data.json
+        echo "DATA=$(cat data.json)" >> $GITHUB_ENV
+
+    - name: Render HTML
+      run: |
+        python - <<'PY'
+        import json, pathlib, os, html, re
+        data = json.loads(os.environ["DATA"])
+        tpl  = pathlib.Path("src/template.html").read_text()
+        for k,v in data.items():
+            tpl = tpl.replace(f"{{{{{k}}}}}", html.escape(str(v)))
+        pathlib.Path("dist/index.html").parent.mkdir(exist_ok=True)
+        pathlib.Path("dist/index.html").write_text(tpl)
+        PY
+
+    - name: Deploy to gh-pages
+      uses: peaceiris/actions-gh-pages@v3
+      with:
+        github_token: ${{ secrets.GITHUB_TOKEN }}
+        publish_dir: dist
