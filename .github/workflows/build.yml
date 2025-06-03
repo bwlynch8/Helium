@@ -12,7 +12,12 @@ jobs:
     steps:
     - name: Checkout repo
       uses: actions/checkout@v4
-
+      
+    - name: Show repo tree
+      run: |
+        echo "Repository contents:"
+        ls -R
+        
     - name: Set up Python
       uses: actions/setup-python@v5
       with:
