@@ -32,7 +32,7 @@ jobs:
         python - <<'PY'
         import json, pathlib, os, html, re
         data = json.loads(os.environ["DATA"])
-        tpl  = pathlib.Path("src/template.html").read_text()
+        tpl  = pathlib.Path("template.html").read_text()
         for k,v in data.items():
             tpl = tpl.replace(f"{{{{{k}}}}}", html.escape(str(v)))
         pathlib.Path("dist/index.html").parent.mkdir(exist_ok=True)
