@@ -3,8 +3,8 @@ on:
   push:
     branches: [ main ]
   schedule:
-    # every 15 minutes (UTC)
-    - cron:  '*/15 * * * *'
+    # every 60 minutes (UTC)
+    - cron:  '*/60 * * * *'
 
 jobs:
   build:
