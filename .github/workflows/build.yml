@@ -35,6 +35,12 @@ jobs:
         python src/rate.py > data.json
         echo "DATA=$(cat data.json)" >> $GITHUB_ENV
 
+    - name: Verify template path
+      run: |
+        echo "GITHUB_WORKSPACE=$GITHUB_WORKSPACE"
+        echo "Listing $GITHUB_WORKSPACE/src"
+        ls -al "$GITHUB_WORKSPACE/src" || true
+        
     - name: Render HTML
       run: |
         python <<'PY'
