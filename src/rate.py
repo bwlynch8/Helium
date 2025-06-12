@@ -38,7 +38,7 @@ data = {
     "fetched_human": utc_now.strftime("%d %b %Y %H:%M UTC"),  # 03 Jun 2025 15:18 UTC
     "live":  f"{(mob/h):.8f}",
     "proj":  f"{proj:.8f}",
-    "days":  days
+    "days":  days,
     "orca":  f"{orca:,.4f}" if orca is not None else "n/a"
 }
 print(json.dumps(data))
